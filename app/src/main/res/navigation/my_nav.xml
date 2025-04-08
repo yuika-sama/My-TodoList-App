@@ -35,11 +35,14 @@
             app:destination="@id/fragment_list"
             app:enterAnim="@anim/from_right"
             app:exitAnim="@anim/to_left" />
+        <argument
+            android:name="currentItem"
+            app:argType="com.example.mytodoapp.data.model.ToDoData" />
     </fragment>
     <fragment
         android:id="@+id/fragment_add"
         android:name="com.example.mytodoapp.fragments.add.AddFragment"
-        android:label="fragment_add"
+        android:label="Add"
         tools:layout="@layout/fragment_add" >
         <action
             android:id="@+id/action_fragment_add_to_fragment_list"
