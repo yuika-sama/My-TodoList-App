@@ -1,12 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.org.jetbrains.kotlin.kapt)
-
-    id("androidx.navigation.safeargs.kotlin")
-    id ("kotlin-kapt")
+    id("com.google.devtools.ksp")
+    id("androidx.navigation.safeargs")
     id("kotlin-parcelize")
-    kotlin("plugin.serialization") version "2.0.21"
+    kotlin("kapt")
 }
 
 android {
@@ -43,6 +41,11 @@ android {
         dataBinding = true
         viewBinding = true
     }
+    sourceSets {
+        getByName("main") {
+            kotlin.srcDirs("build/generated/source/navigation-args")
+        }
+    }
 }
 
 dependencies {
@@ -58,28 +61,30 @@ dependencies {
 
     //Navigation
     val nav_version = "2.8.9"
-    implementation("androidx.navigation:navigation-fragment:$nav_version")
-    implementation("androidx.navigation:navigation-ui:$nav_version")
+    // Views/Fragments integration
+    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
+    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
 
     //Room Component
-    implementation(libs.androidx.room.runtime)
-    //noinspection KaptUsageInsteadOfKsp
-    kapt(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
-    testImplementation(libs.androidx.room.testing)
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    testImplementation("androidx.room:room-testing:$room_version")
 
     //LifeCycle
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.common.java8)
+    val lifecycle_version = "2.8.7"
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-common-java8:$lifecycle_version")
 
     //Kotlin components
-    implementation (libs.kotlin.stdlib.jdk7)
-    api( libs.kotlinx.coroutines.core)
-    api (libs.kotlinx.coroutines.android)
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.10")
+    api( "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    api ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     //RecyclerView
-    implementation (libs.recyclerview.animators)
+    implementation ("jp.wasabeef:recyclerview-animators:4.0.2")
 
     //Safe args
 

@@ -13,21 +13,34 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mytodoapp.R
 import com.example.mytodoapp.data.model.Priority
 import com.example.mytodoapp.data.model.ToDoData
+import com.example.mytodoapp.databinding.RowLayoutBinding
 
 
 class ListAdapter: RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
 
-    var dataList = emptyList<ToDoData>()
+    private var dataList = emptyList<ToDoData>()
 
-    class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+    class MyViewHolder(private val binding: RowLayoutBinding): RecyclerView.ViewHolder(binding.root){
         val titleTxt: TextView = itemView.findViewById(R.id.title_txt)
         val descriptionTxt: TextView = itemView.findViewById(R.id.description_txt)
         val rowBackground: ConstraintLayout = itemView.findViewById(R.id.row_background)
+
+        fun bind(toDoData: ToDoData){
+            binding.toDoData = toDoData
+            binding.executePendingBindings()
+        }
+
+        companion object{
+            fun from(parent: ViewGroup): MyViewHolder{
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = RowLayoutBinding.inflate(layoutInflater, parent, false)
+                return MyViewHolder(binding)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.row_layout, parent, false)
-        return MyViewHolder(view)
+        return MyViewHolder.from(parent)
     }
 
     override fun getItemCount(): Int {
@@ -36,25 +49,7 @@ class ListAdapter: RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = dataList[position]
-        holder.titleTxt.text = currentItem.title
-        holder.descriptionTxt.text = currentItem.description
-        holder.rowBackground.setOnClickListener{
-            val action = ListFragmentDirections.actionFragmentListToFragmentUpdate(dataList[position])
-            holder.itemView.findNavController().navigate(action)
-        }
-        val priorityIndicator = holder.itemView.findViewById<CardView>(R.id.priority_indicator)
-
-        when (dataList[position].priority) {
-            Priority.HIGH -> priorityIndicator.setCardBackgroundColor(
-                ContextCompat.getColor(holder.itemView.context, R.color.red)
-            )
-            Priority.MEDIUM -> priorityIndicator.setCardBackgroundColor(
-                ContextCompat.getColor(holder.itemView.context, R.color.yellow)
-            )
-            Priority.LOW -> priorityIndicator.setCardBackgroundColor(
-                ContextCompat.getColor(holder.itemView.context, R.color.green)
-            )
-        }
+        holder.bind(currentItem)
     }
 
     @SuppressLint("NotifyDataSetChanged")

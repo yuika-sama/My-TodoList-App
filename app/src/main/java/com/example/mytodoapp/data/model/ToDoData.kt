@@ -16,25 +16,4 @@ data class ToDoData(
     var title: String,
     var priority: Priority,
     var description: String
-): Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readInt(),
-        parcel.readString().toString(),
-        TODO("priority"),
-        parcel.readString().toString()
-    )
-
-    companion object : Parceler<ToDoData> {
-
-        override fun ToDoData.write(parcel: Parcel, flags: Int) {
-            parcel.writeInt(id)
-            parcel.writeString(title)
-            parcel.writeString(priority.toString())
-            parcel.writeString(description)
-        }
-
-        override fun create(parcel: Parcel): ToDoData {
-            return ToDoData(parcel)
-        }
-    }
-}
+): Parcelable

@@ -1,15 +1,11 @@
 package com.example.mytodoapp.fragments.update
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -40,20 +36,23 @@ class UpdateFragment : Fragment() {
         _binding = FragmentUpdateBinding.inflate(inflater, container, false)
         binding.args = args
 
-        // Gắn UI với dữ liệu
-        binding.currentTitleEt.setText(args.currentItem.title)
-        binding.currentDescriptionEt.setText(args.currentItem.description)
-        binding.currentPrioritiesSpinner.setSelection(
-            mSharedViewModel.parsePriorityToInt(args.currentItem.priority)
-        )
-        binding.currentPrioritiesSpinner.onItemSelectedListener = mSharedViewModel.listener
+        // Initialize UI elements
+        currentTitleEt = binding.currentTitleEt
+        currentDescriptionEt = binding.currentDescriptionEt
+        currentPrioritiesSpinner = binding.currentPrioritiesSpinner
+
+        // Populate UI with existing data
+//        currentTitleEt.setText(args.currentItem.title)
+//        currentDescriptionEt.setText(args.currentItem.description)
+//        currentPrioritiesSpinner.setSelection(mSharedViewModel.parsePriorityToInt(args.currentItem.priority))
+        currentPrioritiesSpinner.onItemSelectedListener = mSharedViewModel.listener
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true) // Move to onViewCreated for better lifecycle handling
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -68,37 +67,42 @@ class UpdateFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun confirmItemRemoval() {
-//        AlertDialog.Builder(requireContext())
-//            .setTitle("Delete ${args.currentItem.title}?")
-//            .setMessage("Are you sure you want to remove ${args.currentItem.title}?")
-//            .setPositiveButton("Yes") { _, _ ->
-//                mToDoViewModel.deleteItem(args.currentItem)
-//                Toast.makeText(requireContext(), "Successfully removed: ${args.currentItem.title}", Toast.LENGTH_SHORT).show()
-//                findNavController().navigate(R.id.action_fragment_update_to_fragment_list)
-//            }
-//            .setNegativeButton("No", null)
-//            .create()
-//            .show()
-    }
-
     private fun updateItem() {
         val title = currentTitleEt.text.toString()
         val description = currentDescriptionEt.text.toString()
-        val getPriority = currentPrioritiesSpinner.selectedItem.toString()
+        val priority = currentPrioritiesSpinner.selectedItem.toString()
 
         if (mSharedViewModel.verifyDataFromUser(title, description)) {
             val updatedItem = ToDoData(
-                args.currentItem.id,
-                title,
-                mSharedViewModel.parsePriority(getPriority),
-                description
+                id = args.currentItem.id,
+                title = title,
+                priority = mSharedViewModel.parsePriority(priority),
+                description = description
             )
             mToDoViewModel.updateData(updatedItem)
-            Toast.makeText(requireContext(), "Successfully updated!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Successfully Updated!", Toast.LENGTH_SHORT).show()
             findNavController().navigate(R.id.action_fragment_update_to_fragment_list)
         } else {
             Toast.makeText(requireContext(), "Please fill out all fields!", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun confirmItemRemoval() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setPositiveButton("Yes") { _, _ ->
+            mToDoViewModel.deleteItem(args.currentItem)
+            Toast.makeText(requireContext(), "Successfully Removed: ${args.currentItem.title}", Toast.LENGTH_SHORT).show()
+//            findNavController().navigate(R.id.action_fragment_list_to_fragment_update)
+        findNavController().navigate(R.id.action_fragment_update_to_fragment_list)
+        }
+        builder.setNegativeButton("No") { _, _ -> }
+        builder.setTitle("Delete '${args.currentItem.title}'?")
+        builder.setMessage("Are you sure you want to remove '${args.currentItem.title}'?")
+        builder.create().show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
