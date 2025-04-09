@@ -1,24 +1,19 @@
-package com.example.mytodoapp.fragments.list
+package com.example.mytodoapp.fragments.list.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mytodoapp.R
-import com.example.mytodoapp.data.model.Priority
 import com.example.mytodoapp.data.model.ToDoData
 import com.example.mytodoapp.databinding.RowLayoutBinding
 
 
 class ListAdapter: RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
 
-    private var dataList = emptyList<ToDoData>()
+    internal var dataList = emptyList<ToDoData>()
 
     class MyViewHolder(private val binding: RowLayoutBinding): RecyclerView.ViewHolder(binding.root){
         val titleTxt: TextView = itemView.findViewById(R.id.title_txt)
@@ -31,7 +26,7 @@ class ListAdapter: RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
         }
 
         companion object{
-            fun from(parent: ViewGroup): MyViewHolder{
+            fun from(parent: ViewGroup): MyViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding = RowLayoutBinding.inflate(layoutInflater, parent, false)
                 return MyViewHolder(binding)

@@ -15,6 +15,7 @@ import com.example.mytodoapp.data.model.ToDoData
 import com.example.mytodoapp.data.viewmodel.ToDoViewModel
 import com.example.mytodoapp.databinding.FragmentUpdateBinding
 import com.example.mytodoapp.fragments.SharedViewModel
+import com.google.android.material.snackbar.Snackbar
 
 class UpdateFragment : Fragment() {
 
@@ -36,16 +37,7 @@ class UpdateFragment : Fragment() {
         _binding = FragmentUpdateBinding.inflate(inflater, container, false)
         binding.args = args
 
-        // Initialize UI elements
-        currentTitleEt = binding.currentTitleEt
-        currentDescriptionEt = binding.currentDescriptionEt
-        currentPrioritiesSpinner = binding.currentPrioritiesSpinner
-
-        // Populate UI with existing data
-//        currentTitleEt.setText(args.currentItem.title)
-//        currentDescriptionEt.setText(args.currentItem.description)
-//        currentPrioritiesSpinner.setSelection(mSharedViewModel.parsePriorityToInt(args.currentItem.priority))
-        currentPrioritiesSpinner.onItemSelectedListener = mSharedViewModel.listener
+        binding.currentPrioritiesSpinner.onItemSelectedListener = mSharedViewModel.listener
 
         return binding.root
     }
@@ -90,15 +82,29 @@ class UpdateFragment : Fragment() {
     private fun confirmItemRemoval() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setPositiveButton("Yes") { _, _ ->
-            mToDoViewModel.deleteItem(args.currentItem)
-            Toast.makeText(requireContext(), "Successfully Removed: ${args.currentItem.title}", Toast.LENGTH_SHORT).show()
+            val deletedItem = args.currentItem
+            mToDoViewModel.deleteItem(deletedItem)
+//            Toast.makeText(requireContext(), "Successfully Removed: ${args.currentItem.title}", Toast.LENGTH_SHORT).show()
 //            findNavController().navigate(R.id.action_fragment_list_to_fragment_update)
-        findNavController().navigate(R.id.action_fragment_update_to_fragment_list)
+            findNavController().navigate(R.id.action_fragment_update_to_fragment_list)
+
+            restoreDeletedData(deletedItem)
         }
         builder.setNegativeButton("No") { _, _ -> }
         builder.setTitle("Delete '${args.currentItem.title}'?")
         builder.setMessage("Are you sure you want to remove '${args.currentItem.title}'?")
         builder.create().show()
+    }
+    private fun restoreDeletedData(deletedItem: ToDoData) {
+        val snackBar = Snackbar.make(
+            requireView(),
+            "'${deletedItem.title}' deleted!",
+            Snackbar.LENGTH_LONG
+        )
+        snackBar.setAction("Undo") {
+            mToDoViewModel.insertData(deletedItem)
+        }
+        snackBar.show()
     }
 
     override fun onDestroyView() {
