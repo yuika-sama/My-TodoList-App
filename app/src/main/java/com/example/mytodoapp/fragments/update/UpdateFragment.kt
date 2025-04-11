@@ -60,9 +60,9 @@ class UpdateFragment : Fragment() {
     }
 
     private fun updateItem() {
-        val title = currentTitleEt.text.toString()
-        val description = currentDescriptionEt.text.toString()
-        val priority = currentPrioritiesSpinner.selectedItem.toString()
+        val title = binding.currentTitleEt.text.toString()
+        val description = binding.currentDescriptionEt.text.toString()
+        val priority = binding.currentPrioritiesSpinner.selectedItem.toString()
 
         if (mSharedViewModel.verifyDataFromUser(title, description)) {
             val updatedItem = ToDoData(
